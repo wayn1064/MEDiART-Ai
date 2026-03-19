@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String      @id @default(uuid())
+  tenantId     String      // Multi-tenant: 병원 ID 또는 소속 (로컬 독립 시 기준 키)
+  email        String      @unique
+  name         String
+  role         Role        @default(USER) // ADMIN, CREATOR, USER
+  plan         PlanType    @default(FREE) // FREE, STANDARD, PREMIUM
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  contents     Content[]
+  transactions Transaction[]
+  approvals    Approval[]
+}
+
+model Content {
+  id           String      @id @default(uuid())
+  title        String
+  description  String?
+  type         ContentType // IMAGE, VIDEO, DESIGN
+  fileUrl      String
+  thumbnailUrl String?
+  price        Int         @default(0)
+  tags         String[]
+  authorId     String
+  author       User        @relation(fields: [authorId], references: [id])
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  downloads    Download[]
+}
+
+model Transaction {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  amount     Int
+  status     TxStatus @default(PENDING)
+  createdAt  DateTime @default(now())
+}
+
+model Download {
+  id         String   @id @default(uuid())
+  contentId  String
+  content    Content  @relation(fields: [contentId], references: [id])
+  userId     String
+  createdAt  DateTime @default(now())
+}
+
+model Approval {
+  id          String         @id @default(uuid())
+  requesterId String
+  requester   User           @relation(fields: [requesterId], references: [id])
+  type        ApprovalType   // 연차, 결제, 라이선스 승인 등
+  status      ApprovalStatus @default(PENDING)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+enum Role {
+  ADMIN
+  CREATOR
+  USER
+}
+
+enum PlanType {
+  FREE
+  STANDARD
+  PREMIUM
+}
+
+enum ContentType {
+  IMAGE
+  VIDEO
+  DESIGN
+}
+
+enum TxStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum ApprovalType {
+  PAYMENT
+  LICENSE
+  OTHER
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}

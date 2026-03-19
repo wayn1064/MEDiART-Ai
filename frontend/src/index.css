@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@theme {
+  --color-medical-deep-blue: #1A365D;
+  --color-medical-light-blue: #E0F2FE;
+  --color-app-bg: #F8FAFC;
+  --color-app-text: #1E293B;
+  --color-app-subtext: #6B7280;
+}
+
+body {
+  background-color: var(--color-app-bg);
+  color: var(--color-app-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
