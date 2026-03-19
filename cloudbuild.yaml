@@ -52,3 +52,6 @@ steps:
 images:
   - 'gcr.io/$PROJECT_ID/mediart-ai-backend'
   - 'gcr.io/$PROJECT_ID/mediart-ai-frontend'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
