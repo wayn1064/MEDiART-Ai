@@ -4,13 +4,15 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
 RUN npm run build
 
 # Stage 2: Serve with Nginx for Cloud Run
 FROM nginx:alpine
 # Create custom nginx config to route react router requests
 RUN echo $'server {\n\
-    listen 8080;\n\
+    listen 80;\n\
     location / {\n\
         root   /usr/share/nginx/html;\n\
         index  index.html index.htm;\n\
@@ -19,5 +21,5 @@ RUN echo $'server {\n\
 }' > /etc/nginx/conf.d/default.conf
 
 COPY --from=builder /app/dist /usr/share/nginx/html
-EXPOSE 8080
+EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
